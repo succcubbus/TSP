@@ -1,18 +1,20 @@
 package de.randomerror.fh.tsp;
 
 import java.util.List;
+import java.util.stream.IntStream;
+import java.util.stream.Stream;
 
 public class Graph {
 
     private List<Node> nodes;
-    private List<Node> path;
+    private Path displayPath = new Path();
 
-    public List<Node> getPath() {
-        return path;
+    public Path getDisplayPath() {
+        return displayPath;
     }
 
-    public void setPath(List<Node> path) {
-        this.path = path;
+    public void setDisplayPath(Path displayPath) {
+        this.displayPath = displayPath;
     }
 
     public double distanceBetween(Node n1, Node n2) {
@@ -27,5 +29,18 @@ public class Graph {
 
     public void setNodes(List<Node> nodes) {
         this.nodes = nodes;
+    }
+
+    public double getPathLength(Path path) {
+        return sliding(path.solution, 2)
+                .mapToDouble(nodes1 -> distanceBetween(nodes1.get(0), nodes1.get(1)))
+                .sum() + distanceBetween(path.solution.getLast(), path.solution.getFirst());
+    }
+
+    public static <T> Stream<List<T>> sliding(List<T> list, int size) {
+        if (size > list.size())
+            return Stream.empty();
+        return IntStream.range(0, list.size() - size + 1)
+                .mapToObj(start -> list.subList(start, start + size));
     }
 }
