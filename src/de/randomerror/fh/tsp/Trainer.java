@@ -29,7 +29,7 @@ public class Trainer {
         return path;
     }
 
-    public Path mutate(Path path) {
+    public Path mutateSwap(Path path) {
         Path child = path.dulicate();
         for (int i = 0; i < MUTATION; i++) {
             int randomIndex1, randomIndex2;
@@ -52,6 +52,13 @@ public class Trainer {
 
     }
 
+    public Path mutate(Path path) {
+        if(Math.random()<0.2){
+            return mutateSwap(path);
+        }
+        return mutateInvert(path);
+    }
+
     public List<Path> recombine() {
         List<Path> selectedParents = IntStream.range(0, REPRODUCTION)
                 .mapToObj(i -> r.nextInt(population.size()))
@@ -72,7 +79,6 @@ public class Trainer {
                                 while(firstNodes.contains(node)) {
                                     int nodeIndex = parents.get(0).solution.indexOf(node);
                                     node = parents.get(1).solution.get(nodeIndex);
-                                    System.out.println(node);
                                 }
                                 firstNodes.add(node);
                             });
@@ -80,8 +86,6 @@ public class Trainer {
                     Path child = new Path();
 
                     child.solution = new LinkedList<>(firstNodes);
-
-                    System.out.println("child: " + graph.getPathString(child));
 
                     return child;
                 })
@@ -97,9 +101,6 @@ public class Trainer {
                 .limit(PSIZE)
                 .collect(Collectors.toList());
 
-//        population.forEach(path -> {
-//            System.out.println(path.solution.size() + " " + path.getLength());
-//        });
         graph.setDisplayPath(population.get(0));
         generation++;
     }

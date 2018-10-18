@@ -36,7 +36,7 @@ public class Main {
     });
 
     private static void init() {
-        graph.setNodes(IntStream.range(0, 5+(r.nextInt(25)))
+        graph.setNodes(IntStream.range(0, 5+(r.nextInt(50)))
                                .boxed()
                                .map(l -> new Node(r.nextInt(1400) + 100, r.nextInt(700) + 100))
                                .collect(Collectors.toList()));
