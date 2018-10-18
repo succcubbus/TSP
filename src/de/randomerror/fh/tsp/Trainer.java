@@ -76,4 +76,8 @@ public class Trainer {
     public int getGeneration() {
         return generation;
     }
+
+    public void setGeneration(int generation) {
+        this.generation = generation;
+    }
 }
