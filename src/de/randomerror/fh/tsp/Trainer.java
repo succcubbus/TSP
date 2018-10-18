@@ -65,29 +65,12 @@ public class Trainer {
     public void initPopulation() {
         population = new LinkedList<>();
         for (int i = 0; i < PSIZE; i++) {
-            LinkedList<Node> path = new LinkedList<>();
-            List<Node> nodeList = graph.getNodes();
+            LinkedList<Node> nodeList = new LinkedList<>(graph.getNodes());
             Collections.shuffle(nodeList, r);
-            Node start = nodeList.get(0);
-            path.add(start);
-
-            for (Node _node : nodeList) {
-                nodeList.stream()
-                        .filter(o -> !path.contains(o))
-                        .filter(node -> node != path.getLast())
-                        .limit(1)
-                        .forEach(path::add);
-            }
-
             Path p = new Path();
-            p.solution = path;
+            p.solution = nodeList;
             population.add(p);
         }
-        System.out.println("init: ");
-        population.forEach(path -> {
-            System.out.println(path.solution.size() + " " +  path.getLength());
-        });
-        System.out.println("init: ");
     }
 
     public int getGeneration() {
