@@ -1,6 +1,8 @@
 package de.randomerror.fh.tsp;
 
 import javax.swing.*;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.util.Random;
@@ -9,6 +11,7 @@ import java.util.stream.IntStream;
 
 public class Main {
 
+    private static Timer autoEvolutionTimer;
     private static Random r = new Random(1337);
     private static Graph graph = new Graph();
     private static Trainer trainer = new Trainer(graph);
@@ -27,6 +30,12 @@ public class Main {
             } else if (e.getKeyChar()=='z'){
                 graph.moveNodes(windowSizeX,windowSizeY);
                 visualizer.repaint();
+            } else if(e.getKeyChar() == 'a') {
+                if(autoEvolutionTimer.isRunning()) {
+                    autoEvolutionTimer.stop();
+                } else {
+                    autoEvolutionTimer.start();
+                }
             }
         }
 
@@ -48,6 +57,13 @@ public class Main {
                                .collect(Collectors.toList()));
         trainer.initPopulation();
         visualizer.repaint();
+        ActionListener timerTask = e -> {
+            trainer.train();
+            visualizer.repaint();
+        };
+
+        autoEvolutionTimer = new Timer(300, timerTask);
+        autoEvolutionTimer.setRepeats(true);
     }
 
     public static void main(String[] args) {

@@ -16,6 +16,8 @@ public class Trainer {
 
     private int generation = 0;
 
+    private List<Path> bestOfEachGeneration = new LinkedList<>();
+
     public Trainer(Graph graph) {
         this.graph = graph;
     }
@@ -101,7 +103,9 @@ public class Trainer {
                 .limit(PSIZE)
                 .collect(Collectors.toList());
 
-        graph.setDisplayPath(population.get(0));
+        Path best = population.get(0);
+        graph.setDisplayPath(best);
+        bestOfEachGeneration.add(best);
         generation++;
     }
 
@@ -122,5 +126,21 @@ public class Trainer {
 
     public void setGeneration(int generation) {
         this.generation = generation;
+    }
+
+    public List<Path> getPopulation() {
+        return population;
+    }
+
+    public void setPopulation(List<Path> population) {
+        this.population = population;
+    }
+
+    public List<Path> getBestOfEachGeneration() {
+        return bestOfEachGeneration;
+    }
+
+    public void setBestOfEachGeneration(List<Path> bestOfEachGeneration) {
+        this.bestOfEachGeneration = bestOfEachGeneration;
     }
 }
