@@ -1,0 +1,12 @@
+apply plugin: 'java'
+apply plugin: 'application'
+
+sourceCompatibility = 1.8
+
+mainClassName = "de.randomerror.fh.tsp.Main"
+
+jar {
+    manifest {
+        attributes 'Main-Class': 'de.randomerror.fh.tsp.Main'
+    }
+}
