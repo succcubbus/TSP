@@ -1,6 +1,8 @@
 package de.randomerror.fh.tsp;
 
 import java.util.LinkedList;
+import java.util.stream.Collectors;
+import java.util.stream.IntStream;
 
 public class Path {
     public LinkedList<Node> solution;
@@ -28,4 +30,10 @@ public class Path {
         return result;
     }
 
+    public String toString() {
+        String solutionString = IntStream.range(0, solution.size())
+                .mapToObj(index -> String.format("%d%s", index, solution.get(index)))
+                .collect(Collectors.joining(", "));
+        return "[" + solutionString + "] " + length;
+    }
 }
