@@ -40,9 +40,38 @@ public class Trainer {
     }
 
     public List<Path> recombine() {
-        return IntStream.range(0, REPRODUCTION)
-                .map(i -> r.nextInt(population.size()))
-                .mapToObj(parentIndex -> population.get(parentIndex))
+        List<Path> selectedParents = IntStream.range(0, REPRODUCTION)
+                .mapToObj(i -> r.nextInt(population.size()))
+                .map(parentIndex -> population.get(parentIndex))
+                .collect(Collectors.toList());
+
+        return Graph.sliding(selectedParents, 2)
+                .map(parents -> {
+                    int crossover = r.nextInt(population.size());
+                    List<Node> firstNodes = parents.get(0)
+                            .solution.stream()
+                            .limit(crossover)
+                    .collect(Collectors.toList());
+
+                    parents.get(1).solution.stream()
+                            .skip(crossover)
+                            .forEach(node -> {
+                                while(firstNodes.contains(node)) {
+                                    int nodeIndex = parents.get(0).solution.indexOf(node);
+                                    node = parents.get(1).solution.get(nodeIndex);
+                                    System.out.println(node);
+                                }
+                                firstNodes.add(node);
+                            });
+
+                    Path child = new Path();
+
+                    child.solution = new LinkedList<>(firstNodes);
+
+                    System.out.println("child: " + graph.getPathString(child));
+
+                    return child;
+                })
                 .map(this::mutate)
                 .collect(Collectors.toCollection(LinkedList::new));
     }
