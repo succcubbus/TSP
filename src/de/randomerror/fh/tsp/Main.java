@@ -17,6 +17,7 @@ public class Main {
         public void keyTyped(KeyEvent e) {
             if (e.getKeyChar() == 'r') {
                 SwingUtilities.invokeLater(Main::init);
+                trainer.setGeneration(0);
             } else if(e.getKeyChar() == 't') {
                 trainer.train();
                 visualizer.repaint();
@@ -39,8 +40,6 @@ public class Main {
                                .boxed()
                                .map(l -> new Node(r.nextInt(1400) + 100, r.nextInt(700) + 100))
                                .collect(Collectors.toList()));
-
-
         trainer.initPopulation();
         visualizer.repaint();
     }
