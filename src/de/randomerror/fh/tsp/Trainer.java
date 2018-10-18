@@ -12,6 +12,7 @@ public class Trainer {
     private final int PSIZE = 100;
     private final int MUTATION = 1;
     private final int REPRODUCTION = 200;
+    private final double VARIANCE = 0.25;
 
     private int generation = 0;
 
@@ -37,6 +38,18 @@ public class Trainer {
             child.swap(randomIndex1, randomIndex2);
         }
         return child;
+    }
+
+    public Path mutateInvert(Path path) {
+        Path child = path.dulicate();
+        int upperBound, lowerBound;
+        int size = path.solution.size();
+        upperBound = 1 + r.nextInt(size);
+        int partlength = (int) (Math.random() * (size));
+        lowerBound = Math.max((upperBound - partlength), 0);
+        Collections.reverse(child.solution.subList(lowerBound, upperBound));
+        return child;
+
     }
 
     public List<Path> recombine() {
@@ -80,13 +93,13 @@ public class Trainer {
         List<Path> children = recombine();
         population = Stream.concat(population.stream(), children.stream())
                 .map(this::fitness)
-                .sorted(Comparator.comparing(path -> path.getLength()))
+                .sorted(Comparator.comparing(Path::getLength))
                 .limit(PSIZE)
                 .collect(Collectors.toList());
 
-        population.forEach(path -> {
-            System.out.println(path.solution.size() + " " +  path.getLength());
-        });
+//        population.forEach(path -> {
+//            System.out.println(path.solution.size() + " " + path.getLength());
+//        });
         graph.setDisplayPath(population.get(0));
         generation++;
     }
