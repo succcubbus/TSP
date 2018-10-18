@@ -51,4 +51,14 @@ public class Graph {
                 .collect(Collectors.joining(", "));
         return "[" + solutionString + "] " + path.getLength();
     }
+
+    public void moveNodes(int xMax, int yMax) {
+        int index1, index2;
+        index1= (int) (Math.random()*nodes.size());
+        index2= (int) (Math.random()*nodes.size());
+        nodes.get(index1).setX(100+(int) (Math.random()*xMax));
+        nodes.get(index1).setX(100+(int) (Math.random()*yMax));
+        nodes.get(index2).setX(100+(int) (Math.random()*xMax));
+        nodes.get(index2).setX(100+(int) (Math.random()*yMax));
+    }
 }

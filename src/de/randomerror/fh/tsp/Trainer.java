@@ -12,7 +12,7 @@ public class Trainer {
     private final int PSIZE = 100;
     private final int MUTATION = 1;
     private final int REPRODUCTION = 200;
-    private final double VARIANCE = 0.25;
+
 
     private int generation = 0;
 

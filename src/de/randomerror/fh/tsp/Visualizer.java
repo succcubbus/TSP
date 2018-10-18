@@ -32,8 +32,8 @@ public class Visualizer extends JFrame {
             for (int i = 0; i < nodes.size(); i++) {
                 Node node = nodes.get(i);
                 g2d.setStroke(new BasicStroke(2f));
-                g2d.drawArc(node.getX() - 15, node.getY() - 15, 30, 30, 0, 360);
-                g2d.drawString("" + i, node.getX() - 15 + 10, node.getY() - 15 + 18);
+                g2d.drawArc(node.getX() - 3, node.getY() - 3, 6, 6, 0, 360);
+             //   g2d.drawString("" + i, node.getX() - 15 + 10, node.getY() - 15 + 18);
 
             }
 
