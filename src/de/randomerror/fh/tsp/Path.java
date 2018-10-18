@@ -29,11 +29,4 @@ public class Path {
             result.solution = new LinkedList<>(this.solution);
         return result;
     }
-
-    public String toString() {
-        String solutionString = IntStream.range(0, solution.size())
-                .mapToObj(index -> String.format("%d%s", index, solution.get(index)))
-                .collect(Collectors.joining(", "));
-        return "[" + solutionString + "] " + length;
-    }
 }

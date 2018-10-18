@@ -1,6 +1,7 @@
 package de.randomerror.fh.tsp;
 
 import java.util.List;
+import java.util.stream.Collectors;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
@@ -42,5 +43,12 @@ public class Graph {
             return Stream.empty();
         return IntStream.range(0, list.size() - size + 1)
                 .mapToObj(start -> list.subList(start, start + size));
+    }
+
+    public String getPathString(Path path) {
+        String solutionString = path.solution.stream()
+                .map(node -> String.format("%d", nodes.indexOf(node)))
+                .collect(Collectors.joining(", "));
+        return "[" + solutionString + "] " + path.getLength();
     }
 }
