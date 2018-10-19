@@ -12,7 +12,7 @@ import java.util.stream.IntStream;
 public class Main {
 
     private static Timer autoEvolutionTimer;
-    private static Random r = new Random(1337);
+    private static Random r = new Random();
     private static Graph graph = new Graph();
     private static Trainer trainer = new Trainer(graph);
     private static final int GRAPH_SIZE =100;
@@ -22,8 +22,10 @@ public class Main {
         @Override
         public void keyTyped(KeyEvent e) {
             if (e.getKeyChar() == 'r') {
-                SwingUtilities.invokeLater(Main::init);
-                trainer.setGeneration(0);
+                synchronized (Main.class) {
+                    SwingUtilities.invokeLater(Main::init);
+                    trainer.setGeneration(0);
+                }
             } else if (e.getKeyChar() == 't') {
                 trainer.train();
                 visualizer.repaint();
@@ -31,11 +33,24 @@ public class Main {
                 graph.moveNodes(windowSizeX,windowSizeY);
                 visualizer.repaint();
             } else if(e.getKeyChar() == 'a') {
-                if(autoEvolutionTimer.isRunning()) {
-                    autoEvolutionTimer.stop();
-                } else {
-                    autoEvolutionTimer.start();
-                }
+                new Thread(() -> {
+                    while(true) {
+                        if (Math.random() < 0.01) {
+                            visualizer.repaint();
+                            try {
+                                Thread.sleep(5);
+                            } catch (Throwable t) {
+                            }
+                        } else {
+                            trainer.train();
+                        }
+                    }
+                }).start();
+                // if(autoEvolutionTimer.isRunning()) {
+                //     autoEvolutionTimer.stop();
+                // } else {
+                //     autoEvolutionTimer.start();
+                // }
             }
         }
 
@@ -52,18 +67,17 @@ public class Main {
 
     private static void init() {
         graph.setNodes(IntStream.range(0, 5 + (r.nextInt(GRAPH_SIZE)))
+                               .parallel()
                                .boxed()
                                .map(l -> new Node(r.nextInt(windowSizeX) + 100, r.nextInt(windowSizeY) + 100))
                                .collect(Collectors.toList()));
         trainer.initPopulation();
         visualizer.repaint();
         ActionListener timerTask = e -> {
-            trainer.train();
-            visualizer.repaint();
         };
 
-        autoEvolutionTimer = new Timer(300, timerTask);
-        autoEvolutionTimer.setRepeats(true);
+        autoEvolutionTimer = new Timer(1, timerTask);
+        // autoEvolutionTimer.setRepeats(true);
     }
 
     public static void main(String[] args) {

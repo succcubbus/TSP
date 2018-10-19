@@ -29,56 +29,58 @@ public class Visualizer extends JFrame {
 
         @Override
         public void paintComponent(Graphics g) {
-            super.paintComponent(g);
+            synchronized(Main.class) {
+                super.paintComponent(g);
 
-            Graphics2D g2d = (Graphics2D) g;
+                Graphics2D g2d = (Graphics2D) g;
 
-            List<Node> nodes = graph.getNodes();
-            for (int i = 0; i < nodes.size(); i++) {
-                Node node = nodes.get(i);
-                g2d.setStroke(new BasicStroke(2f));
-                g2d.drawArc(node.getX() - 3, node.getY() - 3, 6, 6, 0, 360);
-             //   g2d.drawString("" + i, node.getX() - 15 + 10, node.getY() - 15 + 18);
+                List<Node> nodes = graph.getNodes();
+                for (int i = 0; i < nodes.size(); i++) {
+                    Node node = nodes.get(i);
+                    g2d.setStroke(new BasicStroke(2f));
+                    g2d.drawArc(node.getX() - 3, node.getY() - 3, 6, 6, 0, 360);
+                 //   g2d.drawString("" + i, node.getX() - 15 + 10, node.getY() - 15 + 18);
 
+                }
+
+                List<Node> renderPath = graph.getDisplayPath().dulicate().solution;
+                if(renderPath == null)
+                    return;
+                renderPath.add(renderPath.get(0));
+                if (renderPath.size() - 1 != graph.getNodes().size())
+                    return;
+
+                for (int i = 1; i < renderPath.size(); i++) {
+                    Node n0 = renderPath.get(i - 1);
+                    Node n1 = renderPath.get(i);
+
+                    g2d.drawLine(n0.getX(), n0.getY(), n1.getX(), n1.getY());
+                }
+
+                g2d.drawString("Length: " + graph.getDisplayPath().getLength() + " Gen: " + trainer.getGeneration(), 5, 20);
+
+
+                List<Path> population = trainer.getPopulation();
+
+                List<Double> populationYs = population.stream()
+                        .sorted(Comparator.comparingDouble(path -> -path.getLength()))
+                        .mapToDouble(Path::getLength)
+                        .boxed()
+                        .collect(Collectors.toList());
+
+                if (maxY == 0) {
+                    maxY = populationYs.get(0);
+                }
+
+                drawGraph(g2d, maxY, 10, 230, populationYs);
+
+                List<Double> bestGraphYs = new LinkedList<>(trainer.getBestOfEachGeneration())
+                        .stream()
+                        .mapToDouble(Path::getLength)
+                        .boxed()
+                        .collect(Collectors.toList());
+                drawGraph(g2d, bestGraphYs.get(0), 220, 230, bestGraphYs);
             }
-
-            List<Node> renderPath = graph.getDisplayPath().dulicate().solution;
-            if(renderPath == null)
-                return;
-            renderPath.add(renderPath.get(0));
-            if (renderPath.size() - 1 != graph.getNodes().size())
-                return;
-
-            for (int i = 1; i < renderPath.size(); i++) {
-                Node n0 = renderPath.get(i - 1);
-                Node n1 = renderPath.get(i);
-
-                g2d.drawLine(n0.getX(), n0.getY(), n1.getX(), n1.getY());
-            }
-
-            g2d.drawString("Length: " + graph.getDisplayPath().getLength() + " Gen: " + trainer.getGeneration(), 5, 20);
-
-
-            List<Path> population = trainer.getPopulation();
-
-            List<Double> populationYs = population.stream()
-                    .sorted(Comparator.comparingDouble(path -> -path.getLength()))
-                    .mapToDouble(Path::getLength)
-                    .boxed()
-                    .collect(Collectors.toList());
-
-            if (maxY == 0) {
-                maxY = populationYs.get(0);
-            }
-
-            drawGraph(g2d, maxY, 10, 230, populationYs);
-
-            List<Double> bestGraphYs = trainer.getBestOfEachGeneration()
-                    .stream()
-                    .mapToDouble(Path::getLength)
-                    .boxed()
-                    .collect(Collectors.toList());
-            drawGraph(g2d, bestGraphYs.get(0), 220, 230, bestGraphYs);
         }
 
 

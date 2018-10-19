@@ -63,6 +63,7 @@ public class Trainer {
 
     public List<Path> recombine() {
         List<Path> selectedParents = IntStream.range(0, REPRODUCTION)
+                .parallel()
                 .mapToObj(i -> r.nextInt(population.size()))
                 .map(parentIndex -> population.get(parentIndex))
                 .collect(Collectors.toList());
@@ -73,7 +74,7 @@ public class Trainer {
                     List<Node> firstNodes = parents.get(0)
                             .solution.stream()
                             .limit(crossover)
-                    .collect(Collectors.toList());
+                            .collect(Collectors.toList());
 
                     parents.get(1).solution.stream()
                             .skip(crossover)
@@ -96,27 +97,31 @@ public class Trainer {
     }
 
     public void train() {
-        List<Path> children = recombine();
-        population = Stream.concat(population.stream(), children.stream())
-                .map(this::fitness)
-                .sorted(Comparator.comparing(Path::getLength))
-                .limit(PSIZE)
-                .collect(Collectors.toList());
+        synchronized(Main.class) {
+            List<Path> children = recombine();
+            population = Stream.concat(population.stream(), children.stream())
+                    .map(this::fitness)
+                    .sorted(Comparator.comparing(Path::getLength))
+                    .limit(PSIZE)
+                    .collect(Collectors.toList());
 
-        Path best = population.get(0);
-        graph.setDisplayPath(best);
-        bestOfEachGeneration.add(best);
-        generation++;
+            Path best = population.get(0);
+            graph.setDisplayPath(best);
+            bestOfEachGeneration.add(best);
+            generation++;
+        }
     }
 
     public void initPopulation() {
-        population = new LinkedList<>();
-        for (int i = 0; i < PSIZE; i++) {
-            LinkedList<Node> nodeList = new LinkedList<>(graph.getNodes());
-            Collections.shuffle(nodeList, r);
-            Path p = new Path();
-            p.solution = nodeList;
-            population.add(p);
+        synchronized (Main.class) {
+            population = new LinkedList<>();
+            for (int i = 0; i < PSIZE; i++) {
+                LinkedList<Node> nodeList = new LinkedList<>(graph.getNodes());
+                Collections.shuffle(nodeList, r);
+                Path p = new Path();
+                p.solution = nodeList;
+                population.add(p);
+            }
         }
     }
 
@@ -133,7 +138,9 @@ public class Trainer {
     }
 
     public void setPopulation(List<Path> population) {
-        this.population = population;
+        synchronized (Main.class) {
+            this.population = population;
+        }
     }
 
     public List<Path> getBestOfEachGeneration() {
